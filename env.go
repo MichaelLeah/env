@@ -8,19 +8,31 @@ import (
     "io/ioutil"
     "strings"
     "bufio"
+    "errors"
 )
 
-func Env(name string) string {
+/**
+ * Get
+ * 
+ * Method takes a name string for the lookup term. The get method will then
+ * scan the root .env file for the key and if it finds it, it will return 
+ * the value associated with the pair, if not it will return an error.
+ * 
+ * @param name string     
+ * 
+ * @return string, error
+ */
+func Get(name string) (string, error) {
     f, err := os.Open(".env")
     if err != nil {
-        return ""
+        return "", err
     }
 
     defer f.Close()
 
     bs, err := ioutil.ReadAll(f)
      if err != nil {
-        return ""
+        return "", err
     }
 
     fileContent := string(bs)
@@ -35,12 +47,12 @@ func Env(name string) string {
         }
     }
     if err := scanner.Err(); err != nil {
-        return ""
+        return "", err
     }
 
     if val, ok := m[name]; ok {
-        return val
+        return val, nil
     } 
 
-    return ""
+    return "", errors.New("Key not found in environment file")
 }
